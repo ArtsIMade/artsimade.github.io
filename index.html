@@ -20,11 +20,25 @@
     }
 
     * { box-sizing: border-box; }
-    body { margin: 0; }
+    body {
+      margin: 0;
+      background-image:
+        linear-gradient(to right, rgb(22 71 204 / 8%) 1px, transparent 1px),
+        linear-gradient(to bottom, rgb(22 71 204 / 8%) 1px, transparent 1px);
+      background-size: 24px 24px;
+      background-position: center top;
+    }
     [hidden] { display: none !important; }
     button, a { color: inherit; }
     button { font: inherit; cursor: pointer; }
     :focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
+    .skip-link {
+      position: fixed;
+      top: .75rem;
+      left: 1rem;
+      z-index: 2;
+    }
+    .skip-link:not(:focus) { clip-path: inset(50%); }
 
     .wrap { width: min(100% - 2rem, 74rem); margin-inline: auto; }
     header {
@@ -41,11 +55,24 @@
     .nav-links { display: flex; align-items: center; gap: clamp(.65rem, 3vw, 1.75rem); }
 
     .hero {
+      position: relative;
+      isolation: isolate;
       display: grid;
       grid-template-columns: 1fr 1fr;
       align-items: center;
       gap: clamp(1.5rem, 5vw, 5rem);
       padding-block: clamp(2.5rem, 8vw, 7rem);
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0 -1rem;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(90deg, rgb(255 155 185 / 22%) 0 20px, transparent 20px 40px),
+        repeating-linear-gradient(0deg, rgb(255 155 185 / 22%) 0 20px, transparent 20px 40px),
+        var(--paper);
     }
     h1, h2, h3, p, figure { margin: 0; }
     h1, h2 { letter-spacing: -.075em; line-height: .95; }
@@ -97,6 +124,7 @@
     .filters { display: flex; flex-wrap: wrap; gap: .5rem; }
     .filters button { padding: .55rem .9rem; border: 1px solid var(--ink); background: var(--paper); }
     .filters button[aria-pressed="true"] { background: var(--lime); font-weight: 800; }
+    .filters button:hover { background: var(--pink); }
     #status { margin-bottom: .85rem; }
     .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
     .card {
@@ -159,6 +187,7 @@
   </style>
 </head>
 <body id="top">
+  <a class="action skip-link" href="#main-content">Skip to content</a>
   <header>
     <nav class="wrap" aria-label="Main navigation">
       <a class="brand" href="#top">ArtsIMade</a>
@@ -168,7 +197,7 @@
       </div>
     </nav>
   </header>
-  <main class="wrap">
+  <main class="wrap" id="main-content" tabindex="-1">
     <section class="hero" aria-labelledby="title">
       <div>
         <h1 id="title">Things<br>I Made</h1>
