@@ -3,16 +3,344 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ArtsIMade</title>
+  <title>Things I Made | ArtsIMade</title>
   <style>
-    h1 {
-      color: #0057e7;
-      font-size: clamp(3rem, 10vw, 6rem);
+    :root {
+      color-scheme: light;
+      --ink: #18254b;
+      --paper: #fffbef;
+      --blue: #1647cc;
+      --lime: #e4fb48;
+      --pink: #ff9bb9;
+      --sky: #a5e9ff;
+      font-family: system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      scroll-padding-top: 6rem;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    [hidden] { display: none !important; }
+    button, a { color: inherit; }
+    button { font: inherit; cursor: pointer; }
+    :focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
+
+    .wrap { width: min(100% - 2rem, 74rem); margin-inline: auto; }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: var(--paper);
+      border-bottom: 2px solid var(--ink);
+    }
+    nav { display: flex; align-items: center; justify-content: space-between; gap: .65rem; min-height: 4rem; }
+    nav a { font-weight: 800; text-decoration: none; padding-block: .65rem; }
+    nav a:hover { text-decoration: underline; }
+    .brand { font-size: 1.25rem; letter-spacing: -.06em; }
+    .nav-links { display: flex; align-items: center; gap: clamp(.65rem, 3vw, 1.75rem); }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: clamp(1.5rem, 5vw, 5rem);
+      padding-block: clamp(2.5rem, 8vw, 7rem);
+    }
+    h1, h2, h3, p, figure { margin: 0; }
+    h1, h2 { letter-spacing: -.075em; line-height: .95; }
+    h1 { font-size: clamp(3.35rem, 9vw, 8rem); color: var(--blue); }
+    .hero p { font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.55; margin-block: 1.25rem 1.65rem; max-width: 32ch; }
+    .action {
+      display: inline-block;
+      padding: .7rem 1rem;
+      border: 2px solid var(--ink);
+      background: var(--lime);
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .action:hover { background: var(--pink); }
+
+    .hero-art {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 5 / 4;
+      border: 2px solid var(--ink);
+      box-shadow: 6px 6px 0 var(--ink);
+      background: var(--sky);
+    }
+    .hero-art::before, .hero-art::after { content: ""; position: absolute; }
+    .hero-art::before {
+      width: 34%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      top: 11%;
+      right: 12%;
+      background: var(--lime);
+      box-shadow: 5px 5px 0 var(--pink);
+    }
+    .hero-art::after {
+      width: 135%;
+      height: 80%;
+      left: -18%;
+      bottom: -43%;
+      border-radius: 48% 58% 0 0;
+      transform: rotate(-16deg);
+      background: var(--blue);
+      box-shadow: 0 -18px 0 var(--paper), 0 -35px 0 #5584ff;
+    }
+    .hero-art img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
+
+    .collection { padding: 2rem 0 5rem; border-top: 2px solid var(--ink); }
+    .section-heading { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+    h2 { font-size: clamp(2.4rem, 6vw, 4.25rem); }
+    .filters { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .filters button { padding: .55rem .9rem; border: 1px solid var(--ink); background: var(--paper); }
+    .filters button[aria-pressed="true"] { background: var(--lime); font-weight: 800; }
+    #status { margin-bottom: .85rem; }
+    .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+    .card {
+      display: block;
+      width: 100%;
+      height: 100%;
+      padding: .65rem;
+      border: 2px solid var(--ink);
+      text-align: left;
+      background: #fffefd;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+    .card:hover { box-shadow: 5px 5px 0 var(--blue); }
+    .card-copy { display: grid; justify-items: start; align-content: start; gap: .45rem; padding: .9rem .35rem .45rem; }
+    .card-name { font-size: 1.4rem; font-weight: 850; letter-spacing: -.04em; }
+    .label { display: inline-block; padding: .16rem .5rem; background: var(--sky); font-size: .875rem; font-weight: 750; }
+    .label.new { background: var(--lime); }
+    .media {
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+      background: repeating-linear-gradient(135deg, #f1eddc 0 12px, var(--paper) 12px 24px);
+      border: 1px solid var(--ink);
+    }
+    .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .placeholder { padding: .45rem .7rem; border: 1px solid var(--ink); background: var(--pink); font-size: .875rem; font-weight: 750; }
+    .media img.pending { opacity: 0; }
+
+    dialog {
+      width: min(44rem, 100% - 2rem);
+      max-height: calc(100% - 2rem);
+      padding: clamp(.9rem, 3vw, 1.6rem);
+      border: 2px solid var(--ink);
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow: 6px 6px 0 var(--ink);
+    }
+    dialog::backdrop { background: rgb(24 37 75 / 72%); }
+    .dialog-top { display: flex; justify-content: space-between; align-items: start; gap: 1rem; margin-bottom: 1rem; }
+    dialog h2 { font-size: clamp(1.8rem, 6vw, 3.25rem); margin-top: .35rem; }
+    dialog p { margin-top: 1rem; }
+    dialog .media { max-height: 55vh; }
+    dialog .media img { object-fit: contain; background: var(--paper); }
+    body:has(dialog[open]) { overflow: hidden; }
+
+    @media (max-width: 43rem) {
+      .hero, .cards { grid-template-columns: minmax(0, 1fr); }
+      .hero-art { aspect-ratio: 3 / 2; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .card { transition: transform .2s ease, box-shadow .2s ease; }
+      .arriving { animation: arrive .45s ease-out both; }
+      @keyframes arrive { from { opacity: .72; transform: translateY(10px); } }
+    }
+    @media (prefers-reduced-motion: no-preference) and (hover: hover) {
+      .card:hover { transform: translateY(-3px); }
     }
   </style>
 </head>
-<body>
-  <h1>Hello world!</h1>
-  <p>ArtsIMade</p>
+<body id="top">
+  <header>
+    <nav class="wrap" aria-label="Main navigation">
+      <a class="brand" href="#top">ArtsIMade</a>
+      <div class="nav-links">
+        <a href="#collection" data-filter="all">All items</a>
+        <a href="#collection" data-filter="new">New items</a>
+      </div>
+    </nav>
+  </header>
+  <main class="wrap">
+    <section class="hero" aria-labelledby="title">
+      <div>
+        <h1 id="title">Things<br>I Made</h1>
+        <p>Hi, friends and family! Come see what I’ve been making, growing, and collecting.</p>
+        <a class="action" href="#collection" data-filter="all">Explore the collection</a>
+      </div>
+      <figure class="hero-art" id="hero-art"></figure>
+    </section>
+    <section id="collection" class="collection" aria-labelledby="collection-title" tabindex="-1">
+      <div class="section-heading">
+        <h2 id="collection-title">The collection</h2>
+        <div class="filters" id="filters" hidden>
+          <button type="button" data-filter="all" aria-pressed="true">All items</button>
+          <button type="button" data-filter="new" aria-pressed="false">New items</button>
+        </div>
+      </div>
+      <p id="status" role="status">Loading the collection…</p>
+      <div class="cards" id="cards"></div>
+    </section>
+  </main>
+  <dialog id="details" aria-labelledby="detail-title">
+    <div class="dialog-top">
+      <div>
+        <span id="detail-label" class="label"></span>
+        <h2 id="detail-title"></h2>
+      </div>
+      <form method="dialog"><button class="action" autofocus>Close</button></form>
+    </div>
+    <div id="detail-media"></div>
+    <p id="detail-pitch"></p>
+  </dialog>
+  <template id="card-template">
+    <article>
+      <button type="button" class="card" aria-haspopup="dialog">
+        <span class="card-media"></span>
+        <span class="card-copy">
+          <span class="label"></span>
+          <span class="card-name"></span>
+          <span class="card-pitch"></span>
+        </span>
+      </button>
+    </article>
+  </template>
+  <script>
+    const cards = document.querySelector('#cards');
+    const status = document.querySelector('#status');
+    const filters = document.querySelector('#filters');
+    const details = document.querySelector('#details');
+    const cardTemplate = document.querySelector('#card-template');
+    const detailLabel = document.querySelector('#detail-label');
+    const detailTitle = document.querySelector('#detail-title');
+    const detailPitch = document.querySelector('#detail-pitch');
+    const detailMedia = document.querySelector('#detail-media');
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const reveal = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        if (!reducedMotion.matches) entry.target.classList.add('arriving');
+        reveal.unobserve(entry.target);
+      }
+    }, { threshold: .1 }) : null;
+
+    let products = [];
+    let activeFilter = 'all';
+    let loaded = false;
+
+    function makePhoto(product) {
+      const photo = document.createElement('img');
+      photo.alt = product.pitch || product.name;
+      return photo;
+    }
+
+    function makeMedia(product, lazy) {
+      const media = document.createElement('span');
+      media.className = 'media';
+      const placeholder = document.createElement('span');
+      placeholder.className = 'placeholder';
+      placeholder.textContent = 'Photo coming soon';
+      media.append(placeholder);
+      if (product.image) {
+        const photo = makePhoto(product);
+        photo.classList.add('pending');
+        if (lazy) photo.loading = 'lazy';
+        photo.addEventListener('load', () => {
+          photo.classList.remove('pending');
+          placeholder.hidden = true;
+        }, { once: true });
+        photo.addEventListener('error', () => photo.remove(), { once: true });
+        photo.src = product.image;
+        media.append(photo);
+      }
+      return media;
+    }
+
+    function openDetails(product) {
+      detailLabel.textContent = product.label;
+      detailLabel.classList.toggle('new', product.label === 'new');
+      detailTitle.textContent = product.name;
+      detailPitch.textContent = product.pitch;
+      detailMedia.replaceChildren(makeMedia(product, false));
+      details.showModal();
+    }
+
+    function renderCards() {
+      const visible = activeFilter === 'new'
+        ? products.filter(product => product.label === 'new')
+        : products;
+      reveal?.disconnect();
+      cards.replaceChildren();
+      for (const product of visible) {
+        const card = cardTemplate.content.firstElementChild.cloneNode(true);
+        const label = card.querySelector('.label');
+        label.textContent = product.label;
+        label.classList.toggle('new', product.label === 'new');
+        card.querySelector('.card-name').textContent = product.name;
+        card.querySelector('.card-pitch').textContent = product.pitch;
+        card.querySelector('.card-media').replaceWith(makeMedia(product, true));
+        card.querySelector('button').addEventListener('click', () => openDetails(product));
+        cards.append(card);
+        reveal?.observe(card);
+      }
+
+      status.textContent = visible.length
+        ? `${visible.length} ${activeFilter === 'new' ? 'new ' : ''}${visible.length === 1 ? 'item' : 'items'}`
+        : 'No items to show yet.';
+      for (const button of filters.querySelectorAll('button')) {
+        button.setAttribute('aria-pressed', String(button.dataset.filter === activeFilter));
+      }
+    }
+
+    function showHeroPhoto(candidates) {
+      const [product, ...remaining] = candidates;
+      if (!product) return;
+      const photo = makePhoto(product);
+      photo.addEventListener('load', () => {
+        document.querySelector('#hero-art').append(photo);
+      }, { once: true });
+      photo.addEventListener('error', () => showHeroPhoto(remaining), { once: true });
+      photo.src = product.image;
+    }
+
+    for (const control of document.querySelectorAll('[data-filter]')) {
+      control.addEventListener('click', () => {
+        if (activeFilter === control.dataset.filter) return;
+        activeFilter = control.dataset.filter;
+        if (loaded) renderCards();
+      });
+    }
+
+    async function loadProducts() {
+      try {
+        const response = await fetch('products.json', { cache: 'no-store' });
+        if (!response.ok) throw new Error('Product list unavailable');
+        const list = await response.json();
+        if (!Array.isArray(list) || !list.every(product =>
+          product && ['name', 'pitch', 'label', 'image'].every(field => typeof product[field] === 'string')
+        )) throw new Error('Invalid product list');
+        products = list;
+      } catch {
+        status.textContent = "Can't read products.json — check for a missing comma or quote.";
+        return;
+      }
+
+      loaded = true;
+      filters.hidden = false;
+      renderCards();
+      const withPhotos = products.filter(product => product.image);
+      const ocean = withPhotos.find(product => product.name === 'Ocean painting');
+      showHeroPhoto(ocean ? [ocean, ...withPhotos.filter(product => product !== ocean)] : withPhotos);
+    }
+
+    loadProducts();
+  </script>
 </body>
 </html>
