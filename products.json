@@ -1,4 +1,5 @@
 [
+  { "name": "Eye painting", "pitch": "a canvas painting of an eye", "label": "new", "image": "" },
   { "name": "Clay tree", "pitch": "a tiny Christmas tree on mickey's hand", "label": "handmade", "image": "" },
   { "name": "Ocean painting", "pitch": "a canvas painting of a tsunami", "label": "new", "image": "" },
   { "name": "Sand", "pitch": "beach sand in a zip bag", "label": "collection", "image": "" },
